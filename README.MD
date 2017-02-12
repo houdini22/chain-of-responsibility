@@ -23,17 +23,17 @@ let AbstractChainItemValueContainer = ChainOfResponsibility.AbstractChainItemVal
 
 ```javascript
 class ChainParkingLotBegin extends AbstractChainItem {
-    _execute() {
-        this.getValueContainer().addToCharge(this.getValueContainer().getParameter('entry'));
+    _execute(valueContainer) {
+        valueContainer.addToCharge(valueContainer.getParameter('entry'));
     }
 }
 ```
 
 ```javascript
 class ChainParkingLotFirstHour extends AbstractChainItem {
-    _execute() {
-        this.getValueContainer().subtractSeconds(3600);
-        this.getValueContainer().addToCharge(this.getValueContainer().getParameter('first_hour'));
+    _execute(valueContainer) {
+        valueContainer.subtractSeconds(3600);
+        valueContainer.addToCharge(valueContainer.getParameter('first_hour'));
     }
 
     shouldStopAfter() {
@@ -44,10 +44,10 @@ class ChainParkingLotFirstHour extends AbstractChainItem {
 
 ```javascript
 class ChainParkingLotRestHours extends AbstractChainItem {
-    _execute() {
-        let seconds = this.getValueContainer().getValue('seconds');
-        this.getValueContainer().subtractSeconds(seconds);
-        this.getValueContainer().addToCharge(Math.ceil(seconds / 60 / 60) * this.getValueContainer().getParameter('after_first_hour'));
+    _execute(valueContainer) {
+        let seconds = valueContainer.getValue('seconds');
+        valueContainer.subtractSeconds(seconds);
+        valueContainer.addToCharge(Math.ceil(seconds / 60 / 60) * valueContainer.getParameter('after_first_hour'));
     }
 
     shouldStopAfter() {
