@@ -15,16 +15,17 @@ class AbstractChainItemContainer {
     constructor(valueContainer) {
         this.valueContainer = valueContainer;
         this.firstChainItem = this.getFirstChainItem();
-        this._createItemsChain();
+        this._createItemsChain(this.firstChainItem);
     }
 
     /**
      * Extend it. Here we are creating Stack Chain
      * @abstract
      * @private
+     * @param {AbstractChainItem} first
      * @returns {boolean}
      */
-    _createItemsChain() {
+    _createItemsChain(first) {
         return false;
     }
 
@@ -62,12 +63,20 @@ class AbstractChainItemContainer {
      */
     run() {
         let item = this.getFirstChainItem();
-        while (item && item.shouldSkip()) {
+        while (item && item.shouldSkip(this.getValueContainer())) {
             item = item.getNextChainItem();
         }
-        if (item && !item.shouldStopBefore()) {
+        if (item && !item.shouldStopBefore(this.getValueContainer())) {
             return item.execute();
         }
+        return this.getResult();
+    }
+
+    /**
+     * Get result from value container.
+     * @returns {*}
+     */
+    getResult() {
         return this.getValueContainer().getResult();
     }
 }

@@ -19,8 +19,8 @@ class ChainParkingLotFirstHour extends AbstractChainItem {
         valueContainer.addToCharge(valueContainer.getParameter('first_hour'));
     }
 
-    shouldStopAfter() {
-        return this.getValueContainer().getValue('seconds') <= 0;
+    shouldStopAfter(valueContainer) {
+        return valueContainer.getValue('seconds') <= 0;
     }
 }
 
@@ -31,14 +31,14 @@ class ChainParkingLotRestHours extends AbstractChainItem {
         valueContainer.addToCharge(Math.ceil(seconds / 60 / 60) * valueContainer.getParameter('after_first_hour'));
     }
 
-    shouldStopAfter() {
-        return this.getValueContainer().getValue('seconds') <= 0;
+    shouldStopAfter(valueContainer) {
+        return valueContainer.getValue('seconds') <= 0;
     }
 }
 
 class ParkingLotChainItemContainer extends AbstractChainItemContainer {
-    _createItemsChain() {
-        let stack1 = this.getFirstChainItem();
+    _createItemsChain(first) {
+        let stack1 = first;
         let stack2 = new ChainParkingLotFirstHour(this);
         let stack3 = new ChainParkingLotRestHours(this);
 
@@ -142,7 +142,7 @@ function solution(E, L) {
 
     charger.run();
 
-    return charger.getValueContainer().getResult();
+    return charger.getResult();
 }
 
 let res1 = solution("10:00", "13:21");

@@ -58,12 +58,12 @@ class AbstractChainItem {
     executeNext() {
         let next = this.getNextChainItem();
         if (next) {
-            while (next && next.shouldSkip() === true) {
+            while (next && next.shouldSkip(this.getValueContainer()) === true) {
                 next = next.getNextChainItem();
             }
         }
         if (next) {
-            if (!next.shouldStopBefore()) {
+            if (!next.shouldStopBefore(this.getValueContainer())) {
                 return next.execute();
             }
         }
@@ -76,7 +76,7 @@ class AbstractChainItem {
      */
     execute() {
         this._execute(this.getValueContainer());
-        if (this.shouldStopAfter()) {
+        if (this.shouldStopAfter(this.getValueContainer())) {
             return this.getValueContainer().getResult();
         }
         return this.executeNext();
@@ -85,6 +85,7 @@ class AbstractChainItem {
     /**
      * Extend it. It has Chain Item logic.
      * @abstract
+     * @param {AbstractChainItemValueContainer} valueContainer
      * @returns {boolean}
      * @private
      */
@@ -94,28 +95,31 @@ class AbstractChainItem {
 
     /**
      * Extend it if necessary. Default is false.
-     * Stops executing chain before his execution
+     * Stops executing chain before his execution.
+     * @param {AbstractChainItemValueContainer} valueContainer
      * @returns {boolean}
      */
-    shouldStopBefore() {
+    shouldStopBefore(valueContainer) {
         return false;
     }
 
     /**
      * Extend it if necessary. Default is false.
      * Stops executing chain after his execution.
+     * @param {AbstractChainItemValueContainer} valueContainer
      * @returns {boolean}
      */
-    shouldStopAfter() {
+    shouldStopAfter(valueContainer) {
         return false;
     }
 
     /**
      * Extend it when necessary. Default is false.
      * Skips item execution in chain.
+     * @param {AbstractChainItemValueContainer} valueContainer
      * @returns {boolean}
      */
-    shouldSkip() {
+    shouldSkip(valueContainer) {
         return false;
     }
 }
