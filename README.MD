@@ -12,7 +12,7 @@ npm install chain-of-responsibility
 
 Import classes:
 
-```ecmascript 6
+```javascript
 let ChainOfResponsibility = require('chain-of-responsibility');
 let AbstractChainItem = ChainOfResponsibility.AbstractChainItem;
 let AbstractChainItemContainer = ChainOfResponsibility.AbstractChainItemContainer;
@@ -21,7 +21,7 @@ let AbstractChainItemValueContainer = ChainOfResponsibility.AbstractChainItemVal
 
 Create chain items:
 
-```ecmascript 6
+```javascript
 class ChainParkingLotBegin extends AbstractChainItem {
     _execute() {
         this.getValueContainer().addToCharge(this.getValueContainer().getParameter('entry'));
@@ -33,7 +33,7 @@ class ChainParkingLotBegin extends AbstractChainItem {
 }
 ```
 
-```ecmascript 6
+```javascript
 class ChainParkingLotFirstHour extends AbstractChainItem {
     _execute() {
         this.getValueContainer().subtractSeconds(3600);
@@ -46,7 +46,7 @@ class ChainParkingLotFirstHour extends AbstractChainItem {
 }
 ```
 
-```ecmascript 6
+```javascript
 class ChainParkingLotRestHours extends AbstractChainItem {
     _execute() {
         let seconds = this.getValueContainer().getValue('seconds');
@@ -62,7 +62,7 @@ class ChainParkingLotRestHours extends AbstractChainItem {
 
 Create chain items container:
 
-```ecmascript 6
+```javascript
 class ParkingLotChainItemContainer extends AbstractChainItemContainer {
     _createItemsChain() {
         let stack1 = this.getFirstChainItem();
@@ -81,7 +81,7 @@ class ParkingLotChainItemContainer extends AbstractChainItemContainer {
 
 Create value container:
 
-```ecmascript 6
+```javascript
 class ParkingLotValueContainer extends AbstractChainItemValueContainer {
     _parseValue(seconds) {
         return {
@@ -112,7 +112,7 @@ class ParkingLotValueContainer extends AbstractChainItemValueContainer {
 
 Use created classes:
 
-```ecmascript 6
+```javascript
 let charger = new ParkingLotChainItemContainer(new ParkingLotValueContainer(12060, {
     'entry': 2,
     'first_hour': 3,
