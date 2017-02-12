@@ -11,8 +11,13 @@
   },
   "keywords": [
     "chain-of-responsibility",
-    "design-pattern"
+    "design-pattern",
+    "library"
   ],
   "author": "baniczek@gmail.com",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/houdini22/chain-of-responsibility.git"
+  }
 }
