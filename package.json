@@ -1,0 +1,18 @@
+{
+  "name": "chain-of-responsibility",
+  "version": "0.1.0",
+  "description": "Extendable classes for Chain of Responsibility pattern.",
+  "main": "src/main.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "chain-of-responsibility",
+    "design-pattern"
+  ],
+  "author": "baniczek@gmail.com",
+  "license": "MIT"
+}
