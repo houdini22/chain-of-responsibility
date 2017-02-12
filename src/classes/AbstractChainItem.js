@@ -75,7 +75,7 @@ class AbstractChainItem {
      * @returns {*}
      */
     execute() {
-        this._execute();
+        this._execute(this.getValueContainer());
         if (this.shouldStopAfter()) {
             return this.getValueContainer().getResult();
         }
@@ -88,7 +88,7 @@ class AbstractChainItem {
      * @returns {boolean}
      * @private
      */
-    _execute() {
+    _execute(valueContainer) {
         return false;
     }
 
