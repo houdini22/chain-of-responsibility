@@ -129,7 +129,7 @@ let charger = new ParkingLotChainItemContainer(new ParkingLotValueContainer(1206
 
 charger.run();
 
-let result = charger.getValueContainer().getResult();
+let result = charger.getResult();
 
 console.log(result); // 17
 ```
