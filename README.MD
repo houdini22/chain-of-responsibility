@@ -19,16 +19,12 @@ let AbstractChainItemContainer = ChainOfResponsibility.AbstractChainItemContaine
 let AbstractChainItemValueContainer = ChainOfResponsibility.AbstractChainItemValueContainer;
 ```
 
-Create chain items:
+### Create chain items:
 
 ```javascript
 class ChainParkingLotBegin extends AbstractChainItem {
     _execute() {
         this.getValueContainer().addToCharge(this.getValueContainer().getParameter('entry'));
-    }
-
-    shouldExecute() {
-        return true;
     }
 }
 ```
@@ -40,8 +36,8 @@ class ChainParkingLotFirstHour extends AbstractChainItem {
         this.getValueContainer().addToCharge(this.getValueContainer().getParameter('first_hour'));
     }
 
-    shouldExecute() {
-        return this.getValueContainer().getValue('seconds') > 0;
+    shouldStopAfter() {
+        return this.getValueContainer().getValue('seconds') <= 0;
     }
 }
 ```
@@ -54,13 +50,25 @@ class ChainParkingLotRestHours extends AbstractChainItem {
         this.getValueContainer().addToCharge(Math.ceil(seconds / 60 / 60) * this.getValueContainer().getParameter('after_first_hour'));
     }
 
-    shouldExecute() {
-        return this.getValueContainer().getValue('seconds') > 0;
+    shouldStopAfter() {
+        return this.getValueContainer().getValue('seconds') <= 0;
     }
 }
 ```
 
-Create chain items container:
+#### Chain Item flow methods
+
+In ```AbstractChainItem``` class you can modify the Chain Stack flow.
+
+The following methods are available:
+
+* ```shouldStopBefore```
+* ```shouldStopAfter```
+* ```shouldSkip```
+
+and should return booleans.
+
+### Create chain items container:
 
 ```javascript
 class ParkingLotChainItemContainer extends AbstractChainItemContainer {
@@ -79,7 +87,7 @@ class ParkingLotChainItemContainer extends AbstractChainItemContainer {
 }
 ```
 
-Create value container:
+### Create value container:
 
 ```javascript
 class ParkingLotValueContainer extends AbstractChainItemValueContainer {
@@ -110,7 +118,7 @@ class ParkingLotValueContainer extends AbstractChainItemValueContainer {
 }
 ```
 
-Use created classes:
+### Use created classes:
 
 ```javascript
 let charger = new ParkingLotChainItemContainer(new ParkingLotValueContainer(12060, {
