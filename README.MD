@@ -31,9 +31,12 @@ class ChainParkingLotBegin extends AbstractChainItem {
 
 ```javascript
 class ChainParkingLotFirstHour extends AbstractChainItem {
-    _execute(valueContainer) {
+    _execute(valueContainer, resolve) {
         valueContainer.subtractSeconds(3600);
         valueContainer.addToCharge(valueContainer.getParameter('first_hour'));
+        setTimeout(() => {
+            resolve();
+        }, 2000);
     }
 
     shouldStopAfter(valueContainer) {
@@ -41,6 +44,9 @@ class ChainParkingLotFirstHour extends AbstractChainItem {
     }
 }
 ```
+
+If Chain Item was created with async flag in ```_execute``` method there is second parameter available which is 
+resolve function.
 
 ```javascript
 class ChainParkingLotRestHours extends AbstractChainItem {
@@ -74,7 +80,7 @@ and should return booleans.
 class ParkingLotChainItemContainer extends AbstractChainItemContainer {
     _createItemsChain(first) {
         let stack1 = first;
-        let stack2 = new ChainParkingLotFirstHour(this);
+        let stack2 = new ChainParkingLotFirstHour(this, true);
         let stack3 = new ChainParkingLotRestHours(this);
 
         stack1.setNextChainItem(stack2);
@@ -86,6 +92,8 @@ class ParkingLotChainItemContainer extends AbstractChainItemContainer {
     }
 }
 ```
+
+Second parameter in ```new ChainParkingLotFirstHour(this, true);``` describes if Chain Item is async.
 
 ### Create value container:
 
@@ -127,9 +135,13 @@ let charger = new ParkingLotChainItemContainer(new ParkingLotValueContainer(1206
     'after_first_hour': 4
 }));
 
-charger.run();
+let promise = charger.run();
+
+promise.then((result) => {
+    console.log("promised", result); // promised 17
+});
 
 let result = charger.getResult();
 
-console.log(result); // 17
+console.log(result); // 5
 ```

@@ -8,15 +8,18 @@ let AbstractChainItemContainer = ChainOfResponsibility.AbstractChainItemContaine
 let AbstractChainItemValueContainer = ChainOfResponsibility.AbstractChainItemValueContainer;
 
 class ChainParkingLotBegin extends AbstractChainItem {
-    _execute(valueContainer) {
+    _execute(valueContainer, resolve) {
         valueContainer.addToCharge(valueContainer.getParameter('entry'));
     }
 }
 
 class ChainParkingLotFirstHour extends AbstractChainItem {
-    _execute(valueContainer) {
+    _execute(valueContainer, resolve) {
         valueContainer.subtractSeconds(3600);
         valueContainer.addToCharge(valueContainer.getParameter('first_hour'));
+        setTimeout(() => {
+            resolve();
+        }, 2000);
     }
 
     shouldStopAfter(valueContainer) {
@@ -39,7 +42,7 @@ class ChainParkingLotRestHours extends AbstractChainItem {
 class ParkingLotChainItemContainer extends AbstractChainItemContainer {
     _createItemsChain(first) {
         let stack1 = first;
-        let stack2 = new ChainParkingLotFirstHour(this);
+        let stack2 = new ChainParkingLotFirstHour(this, true);
         let stack3 = new ChainParkingLotRestHours(this);
 
         stack1.setNextChainItem(stack2);
@@ -140,7 +143,11 @@ function solution(E, L) {
         'after_first_hour': 4
     }));
 
-    charger.run();
+    let promise = charger.run();
+
+    promise.then((result) => {
+        console.log("promised", result);
+    });
 
     return charger.getResult();
 }

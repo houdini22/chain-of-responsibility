@@ -1,6 +1,6 @@
 {
   "name": "chain-of-responsibility",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Extendable classes for Chain of Responsibility pattern.",
   "main": "src/main.js",
   "directories": {

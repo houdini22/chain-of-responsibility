@@ -11,10 +11,35 @@ class AbstractChainItem {
     /**
      * @constructor
      * @param {AbstractChainItemContainer} chainContainer
+     * @param {Boolean} usePromise
      */
-    constructor(chainContainer) {
+    constructor(chainContainer, usePromise = false) {
         this.chainContainer = chainContainer;
         this.nextChainItem = null;
+        this.promise = null;
+        this.resolve = null;
+        if (usePromise === true) {
+            this.promise = new Promise((resolve, reject) => {
+                this.resolve = resolve;
+            });
+            this.getChainContainer().addPromise(this.promise);
+        }
+    }
+
+    /**
+     *
+     * @returns {boolean}
+     */
+    hasPromise() {
+        return !!this.promise;
+    }
+
+    /**
+     *
+     * @returns {null|Promise}
+     */
+    getPromise() {
+        return this.promise;
     }
 
     /**
@@ -63,7 +88,7 @@ class AbstractChainItem {
             }
         }
         if (next) {
-            if (!next.shouldStopBefore(this.getValueContainer())) {
+            if (next.shouldStopBefore(this.getValueContainer()) === false) {
                 return next.execute();
             }
         }
@@ -75,21 +100,31 @@ class AbstractChainItem {
      * @returns {*}
      */
     execute() {
-        this._execute(this.getValueContainer());
-        if (this.shouldStopAfter(this.getValueContainer())) {
+        if (this.hasPromise()) {
+            this.getPromise().then(() => {
+                if (this.shouldStopAfter(this.getValueContainer()) === false) {
+                    this.executeNext();
+                }
+            });
+        }
+        this._execute(this.getValueContainer(), this.resolve);
+        if (this.shouldStopAfter(this.getValueContainer()) === true) {
             return this.getValueContainer().getResult();
         }
-        return this.executeNext();
+        if (!this.hasPromise()) {
+            return this.executeNext();
+        }
     }
 
     /**
      * Extend it. It has Chain Item logic.
      * @abstract
      * @param {AbstractChainItemValueContainer} valueContainer
+     * @param {Function} resolve
      * @returns {boolean}
      * @private
      */
-    _execute(valueContainer) {
+    _execute(valueContainer, resolve) {
         return false;
     }
 

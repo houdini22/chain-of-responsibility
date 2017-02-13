@@ -13,9 +13,15 @@ class AbstractChainItemContainer {
      * @param opts
      */
     constructor(valueContainer) {
+        this.promises = [];
         this.valueContainer = valueContainer;
         this.firstChainItem = this.getFirstChainItem();
         this._createItemsChain(this.firstChainItem);
+        this.resolvedPromises = 0;
+        this.availablePromises = 0;
+        this.promise = new Promise((resolve, reject) => {
+            this.resolve = resolve;
+        });
     }
 
     /**
@@ -58,18 +64,31 @@ class AbstractChainItemContainer {
     }
 
     /**
+     *
+     * @param promise
+     * @returns {AbstractChainItemContainer}
+     */
+    addPromise(promise) {
+        this.promises.push(promise);
+        return this;
+    }
+
+    /**
      * Run firstChainItem stack and process the Stack Chain.
      * @returns {*}
      */
     run() {
         let item = this.getFirstChainItem();
-        while (item && item.shouldSkip(this.getValueContainer())) {
+        while (item && item.shouldSkip(this.getValueContainer()) === true) {
             item = item.getNextChainItem();
         }
-        if (item && !item.shouldStopBefore(this.getValueContainer())) {
-            return item.execute();
+        if (item && item.shouldStopBefore(this.getValueContainer()) === false) {
+            item.execute();
         }
-        return this.getResult();
+        Promise.all(this.promises).then(() => {
+            this.resolve(this.getResult());
+        });
+        return this.promise;
     }
 
     /**
