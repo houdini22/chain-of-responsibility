@@ -1,49 +1,60 @@
-/**
- * @author <baniczek@gmail.com>
- */
+import * as ChainOfResponsibility from '../dist/chain-of-responsibility.js'
 
-let ChainOfResponsibility = require('../src/main');
-let AbstractChainItem = ChainOfResponsibility.AbstractChainItem;
-let AbstractChainItemContainer = ChainOfResponsibility.AbstractChainItemContainer;
-let AbstractChainItemValueContainer = ChainOfResponsibility.AbstractChainItemValueContainer;
+const {AbstractChainItem, AbstractChainItemValueContainer, AbstractChainItemContainer} = ChainOfResponsibility;
 
 class ChainParkingLotBegin extends AbstractChainItem {
-    _execute(valueContainer, resolve) {
+    constructor(...props) {
+        super(...props);
+    }
+
+    _execute(valueContainer, resolve: (value: any) => void) {
         valueContainer.addToCharge(valueContainer.getParameter('entry'));
     }
 }
 
 class ChainParkingLotFirstHour extends AbstractChainItem {
-    _execute(valueContainer, resolve) {
+    constructor(...props) {
+        super(...props);
+    }
+
+    _execute(valueContainer, resolve: (value: any) => void) {
         valueContainer.subtractSeconds(3600);
         valueContainer.addToCharge(valueContainer.getParameter('first_hour'));
         setTimeout(() => {
-            resolve();
+            resolve(valueContainer.getParameter('first_hour'));
         }, 2000);
     }
 
-    shouldStopAfter(valueContainer) {
+    shouldStopAfter(valueContainer): boolean {
         return valueContainer.getValue('seconds') <= 0;
     }
 }
 
 class ChainParkingLotRestHours extends AbstractChainItem {
+    constructor(...props) {
+        super(...props);
+    }
+
     _execute(valueContainer) {
-        let seconds = valueContainer.getValue('seconds');
+        const seconds = valueContainer.getValue('seconds');
         valueContainer.subtractSeconds(seconds);
         valueContainer.addToCharge(Math.ceil(seconds / 60 / 60) * valueContainer.getParameter('after_first_hour'));
     }
 
-    shouldStopAfter(valueContainer) {
+    shouldStopAfter(valueContainer): boolean {
         return valueContainer.getValue('seconds') <= 0;
     }
 }
 
 class ParkingLotChainItemContainer extends AbstractChainItemContainer {
+    constructor(...props) {
+        super(...props);
+    }
+
     _createItemsChain(first) {
-        let stack1 = first;
-        let stack2 = new ChainParkingLotFirstHour(this, true);
-        let stack3 = new ChainParkingLotRestHours(this);
+        const stack1 = first;
+        const stack2 = new ChainParkingLotFirstHour(this, true);
+        const stack3 = new ChainParkingLotRestHours(this);
 
         stack1.setNextChainItem(stack2);
         stack2.setNextChainItem(stack3);
@@ -52,31 +63,43 @@ class ParkingLotChainItemContainer extends AbstractChainItemContainer {
     _getFirstChainItem() {
         return new ChainParkingLotBegin(this);
     }
+
+    run(): Promise<any> {
+        return super.run();
+    }
+
+    getResult(): any {
+        return super.getResult();
+    }
 }
 
 class ParkingLotValueContainer extends AbstractChainItemValueContainer {
-    _parseValue(seconds) {
+    constructor(...props) {
+        super(...props);
+    }
+
+    _parseValue(seconds: number): any {
         return {
             charge: 0,
             seconds
         };
     }
 
-    getResult() {
-        return this.getValue('charge');
+    getResult(): any {
+        return super.getValue('charge');
     }
 
-    addToCharge(charge) {
-        let value = this.getValue('charge');
+    addToCharge(charge: number) {
+        let value = super.getValue('charge');
         value += charge;
-        this.setValue('charge', value);
+        super.setValue('charge', value);
         return this;
     }
 
-    subtractSeconds(seconds) {
-        let value = this.getValue('seconds');
+    subtractSeconds(seconds: number) {
+        let value = super.getValue('seconds');
         value -= seconds;
-        this.setValue('seconds', value);
+        super.setValue('seconds', value);
         return this;
     }
 }
@@ -112,22 +135,25 @@ class ParkingLotValueContainer extends AbstractChainItemValueContainer {
  * @param time
  * @returns {{hour: Number, minutes: Number}}
  */
-function parseTime(time) {
-    let splitted = time.split(":");
-    let hour = parseInt(splitted[0]);
-    let minutes = parseInt(splitted[1]);
+function parseTime(time: string): {
+    hour: number;
+    minutes: number;
+} {
+    const splitted = time.split(":");
+    const hour = parseInt(splitted[0]);
+    const minutes = parseInt(splitted[1]);
     return {
         hour,
         minutes
     };
 }
 
-function solution(E, L) {
-    let startDate = new Date();
-    let endDate = new Date();
+function solution(E: string, L: string): any {
+    const startDate = new Date();
+    const endDate = new Date();
 
-    let startParsed = parseTime(E);
-    let endParsed = parseTime(L);
+    const startParsed = parseTime(E);
+    const endParsed = parseTime(L);
 
     startDate.setHours(startParsed.hour);
     startDate.setMinutes(startParsed.minutes);
@@ -135,15 +161,15 @@ function solution(E, L) {
     endDate.setHours(endParsed.hour);
     endDate.setMinutes(endParsed.minutes);
 
-    let differenceMS = endDate.getTime() - startDate.getTime();
-    let differenceSecs = differenceMS / 1000;
-    let charger = new ParkingLotChainItemContainer(new ParkingLotValueContainer(differenceSecs, {
+    const differenceMS = endDate.getTime() - startDate.getTime();
+    const differenceSecs = differenceMS / 1000;
+    const charger = new ParkingLotChainItemContainer(new ParkingLotValueContainer(differenceSecs, {
         'entry': 2,
         'first_hour': 3,
         'after_first_hour': 4
     }));
 
-    let promise = charger.run();
+    const promise = charger.run();
 
     promise.then((result) => {
         console.log("promised", result);
@@ -152,8 +178,8 @@ function solution(E, L) {
     return charger.getResult();
 }
 
-let res1 = solution("10:00", "13:21");
-let res2 = solution("09:42", "11:42");
+const res1 = solution("10:00", "13:21");
+const res2 = solution("09:42", "11:42");
 
 console.log(res1);
 console.log(res2);

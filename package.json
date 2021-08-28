@@ -1,13 +1,17 @@
 {
   "name": "chain-of-responsibility",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Extendable classes for Chain of Responsibility pattern.",
-  "main": "src/main.js",
+  "main": "./dist/chain-of-responsibility.js",
   "directories": {
     "example": "examples"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-prod": "webpack --config ./configs/prod.js",
+    "build-dev": "webpack --config ./configs/dev.js",
+    "build-example": "webpack --config ./configs/example.js",
+    "build": "npm run build-prod && npm run build-dev && npm run build-example",
+    "prettier-write": "prettier --write \"src/**/*.tsx\""
   },
   "keywords": [
     "chain-of-responsibility",
@@ -19,5 +23,17 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/houdini22/chain-of-responsibility.git"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.13.16",
+    "@babel/core": "^7.14.0",
+    "@babel/preset-env": "^7.14.0",
+    "@babel/preset-typescript": "^7.13.0",
+    "@types/node": "^14.14.34",
+    "babel-loader": "^8.2.2",
+    "prettier": "^2.3.2",
+    "typescript": "^4.2.4",
+    "webpack": "^5.51.1",
+    "webpack-cli": "^4.8.0"
   }
 }
