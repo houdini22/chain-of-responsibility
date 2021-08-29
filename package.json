@@ -3,9 +3,6 @@
   "version": "0.3.0",
   "description": "Extendable classes for Chain of Responsibility pattern.",
   "main": "./dist/chain-of-responsibility.js",
-  "directories": {
-    "example": "examples"
-  },
   "scripts": {
     "build-prod": "webpack --config ./configs/prod.js",
     "build-dev": "webpack --config ./configs/dev.js",

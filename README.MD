@@ -12,11 +12,10 @@ npm install chain-of-responsibility
 
 Import classes:
 
-```javascript
-let ChainOfResponsibility = require('chain-of-responsibility');
-let AbstractChainItem = ChainOfResponsibility.AbstractChainItem;
-let AbstractChainItemContainer = ChainOfResponsibility.AbstractChainItemContainer;
-let AbstractChainItemValueContainer = ChainOfResponsibility.AbstractChainItemValueContainer;
+```typescript
+import * as ChainOfResponsibility from '../dist/chain-of-responsibility.js'
+
+const {AbstractChainItem, AbstractChainItemValueContainer, AbstractChainItemContainer} = ChainOfResponsibility;
 ```
 
 ### Create chain items:
